@@ -13,6 +13,7 @@ import org.example.javaframework.infra.security.JwtProvider;
 import org.example.javaframework.infra.security.UserSession;
 import org.example.javaframework.web.common.ErrorResponseWriter;
 import org.example.javaframework.web.common.ErrorCode;
+import org.slf4j.MDC;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -51,6 +52,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     claims.get("role", String.class),
                     claims.get("domain", String.class)
             );
+
+            MDC.put("userId", session.userId());
 
             var authentication = new UsernamePasswordAuthenticationToken(
                     session, null, session.getAuthorities());
