@@ -1,3 +1,9 @@
 spring:
   application:
     name: JavaFramework
+framework:
+  infra:
+    security:
+      jwt:
+        secret:  ${JWT_SECRET:day-la-chuoi-test-tam-thoi-du-32-ky-tu}
+        ttl-seconds: ${JWT_TTL_SECONDS:3600}

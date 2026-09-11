@@ -8,6 +8,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.example.javaframework.infra.security.CurrentUserContext;
 import org.example.javaframework.infra.security.JwtProvider;
 import org.example.javaframework.infra.security.UserSession;
@@ -20,6 +21,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
+@Slf4j
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtProvider jwtProvider;
@@ -35,18 +37,20 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     FilterChain chain) throws IOException, ServletException {
 
         String header = request.getHeader("Authorization");
-
+        log.debug(header);
         if (header == null || !header.startsWith("Bearer ")) {
+            log.debug("No JWT token found in request headers: {}", header);
             chain.doFilter(request, response);
             return;
         }
 
         String token = header.substring(7);
-
+        log.debug(token);
         try {
             Claims claims = jwtProvider.verifyAndParse(token);
-
+        log.debug(claims.toString());
             UserSession session = new UserSession(
+                    token,
                     claims.getSubject(),
                     claims.get("username", String.class),
                     claims.get("role", String.class),
@@ -59,7 +63,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     session, null, session.getAuthorities());
             SecurityContextHolder.getContext().setAuthentication(authentication);
             CurrentUserContext.set(session);
-
+            log.debug("User authenticated: {}", session.username());
+            log.debug(session.userId());
             chain.doFilter(request, response);
 
         } catch (ExpiredJwtException | SignatureException | MalformedJwtException e) {

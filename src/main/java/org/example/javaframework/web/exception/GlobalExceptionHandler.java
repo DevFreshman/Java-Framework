@@ -4,6 +4,7 @@ package org.example.javaframework.web.exception;
 import org.example.javaframework.web.api.Response;
 import org.example.javaframework.web.api.Errors;
 import org.example.javaframework.web.common.ErrorCode;
+import org.example.javaframework.web.common.InterfaceErrorCode;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
@@ -22,7 +23,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(BusinessException.class)
     public ResponseEntity<Response<?>> handleBusiness(BusinessException ex) {
-        ErrorCode code = ex.getInterfaceErrorCode();
+        InterfaceErrorCode code = ex.getErrorCode();
         String message = messageSource.getMessage(
                 code.getCode(), ex.getArgs(), LocaleContextHolder.getLocale());
         return ResponseEntity.status(code.getHttpStatus())

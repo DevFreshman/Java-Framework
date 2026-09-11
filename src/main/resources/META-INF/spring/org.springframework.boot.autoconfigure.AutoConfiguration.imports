@@ -1,1 +1,3 @@
-org.example.javaframework.error.ErrorHandlingAutoConfiguration
+org.example.javaframework.configuration.ErrorHandlingAutoConfiguration
+org.example.javaframework.configuration.WebFilterConfig
+org.example.javaframework.configuration.ApiEnvelopeAutoConfiguration
