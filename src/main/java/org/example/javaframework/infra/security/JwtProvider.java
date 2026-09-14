@@ -31,15 +31,6 @@ public class JwtProvider {
             throw new IllegalStateException(
                     "framework.security.jwt.secret phải có ít nhất 32 ký tự (256 bit) cho thuật toán HS256");
         }
-
-        String secret = jwtProperties.getSecret();
-        long tll = jwtProperties.getTtlSeconds();
-        SecretKey secretKey = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
-
-        log.debug("Secret Key: {}", secret);
-        log.debug("Secret key: {}", secretKey);
-        log.debug("TTL: {}", tll);
-
         this.signingKey = Keys.hmacShaKeyFor(jwtProperties.getSecret().getBytes(StandardCharsets.UTF_8));
         this.expirationMs = jwtProperties.getTtlSeconds() * 1000;;
     }
@@ -68,8 +59,6 @@ public class JwtProvider {
                     .build()
                     .parseSignedClaims(token)
                     .getPayload();
-
-            log.debug("Parsed claims: {}", claims);
 
             return claims;
 

@@ -37,7 +37,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     FilterChain chain) throws IOException, ServletException {
 
         String header = request.getHeader("Authorization");
-        log.debug(header);
         if (header == null || !header.startsWith("Bearer ")) {
             log.debug("No JWT token found in request headers: {}", header);
             chain.doFilter(request, response);
@@ -45,10 +44,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         String token = header.substring(7);
-        log.debug(token);
         try {
             Claims claims = jwtProvider.verifyAndParse(token);
-        log.debug(claims.toString());
             UserSession session = new UserSession(
                     token,
                     claims.getSubject(),
