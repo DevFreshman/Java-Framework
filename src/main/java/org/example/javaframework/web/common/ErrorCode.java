@@ -7,7 +7,8 @@ public enum ErrorCode implements InterfaceErrorCode {
     MISSING_REQUIRED_HEADER(HttpStatus.BAD_REQUEST),
     UNAUTHORIZED(HttpStatus.UNAUTHORIZED),
     FORBIDDEN(HttpStatus.FORBIDDEN),
-    INTERNAL_ERROR(HttpStatus.INTERNAL_SERVER_ERROR);
+    INTERNAL_ERROR(HttpStatus.INTERNAL_SERVER_ERROR),
+    NOT_FOUND(HttpStatus.NOT_FOUND);
 
     private final HttpStatus httpStatus;
     ErrorCode(HttpStatus httpStatus) { this.httpStatus = httpStatus; }

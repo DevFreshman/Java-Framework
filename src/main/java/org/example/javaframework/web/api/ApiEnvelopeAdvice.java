@@ -6,6 +6,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
+import org.springframework.http.server.ServletServerHttpResponse;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 
@@ -14,7 +15,7 @@ public class ApiEnvelopeAdvice implements ResponseBodyAdvice<Object> {
 
     @Override
     public boolean supports(MethodParameter returnType, Class<? extends HttpMessageConverter<?>> converterType) {
-        return true;
+        return !returnType.getParameterType().equals(String.class);
     }
 
     @Override
@@ -26,6 +27,8 @@ public class ApiEnvelopeAdvice implements ResponseBodyAdvice<Object> {
             return body;
         }
 
+        String actualStatusCode = resolveActualStatus(response);
+
         if (body instanceof Page<?> page) {
             PageMeta pageMeta = new PageMeta(
                     page.getNumber() + 1,
@@ -36,6 +39,13 @@ public class ApiEnvelopeAdvice implements ResponseBodyAdvice<Object> {
             return Response.success(page.getContent(), pageMeta);
         }
 
-        return Response.success(body);
+        return Response.success(body, actualStatusCode);
+    }
+
+    private String resolveActualStatus(ServerHttpResponse response) {
+        if (response instanceof ServletServerHttpResponse servletResponse) {
+            return String.valueOf(servletResponse.getServletResponse().getStatus());
+        }
+        return "200";
     }
 }

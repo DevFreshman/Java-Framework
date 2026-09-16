@@ -15,7 +15,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
-@Import({JwtProvider.class, ErrorResponseWriter.class})
+@Import({JwtProvider.class, ErrorResponseWriter.class, PasswordEncoderConfig.class})
 public class SecurityConfig {
 
     @Bean
