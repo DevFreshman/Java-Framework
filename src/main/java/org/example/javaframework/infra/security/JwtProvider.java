@@ -35,7 +35,7 @@ public class JwtProvider {
         this.expirationMs = jwtProperties.getTtlSeconds() * 1000;;
     }
 
-    public String generateToken(String userId, String username, String role, String domain) {
+    public String generateToken(String userId, String username, String role, String status) {
         Date now = new Date();
         Date expiry = new Date(now.getTime() + expirationMs);
 
@@ -43,7 +43,7 @@ public class JwtProvider {
                 .subject(userId)
                 .claim("username", username)
                 .claim("role", role)
-                .claim("domain", domain)
+                .claim("status", status)
                 .issuedAt(now)
                 .expiration(expiry)
                 .signWith(signingKey)

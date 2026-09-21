@@ -1,7 +1,6 @@
 package org.example.javaframework.configuration;
 
 import org.example.javaframework.infra.SessionService;
-import org.example.javaframework.infra.model.UserInfo;
 import org.example.javaframework.infra.redis.RedisSessionService;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
@@ -15,19 +14,33 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 public class RedisConfig {
 
     @Bean
-    public RedisTemplate<String, UserInfo> redisTemplate(RedisConnectionFactory connectionFactory) {
-        RedisTemplate<String, UserInfo> template = new RedisTemplate<>();
+    public RedisTemplate<String, Object> redisTemplate(
+            RedisConnectionFactory connectionFactory) {
+
+        RedisTemplate<String, Object> template = new RedisTemplate<>();
+
         template.setConnectionFactory(connectionFactory);
-        template.setKeySerializer(new StringRedisSerializer());
-        template.setValueSerializer(GenericJacksonJsonRedisSerializer.builder().build());
-        template.setHashKeySerializer(new StringRedisSerializer());
-        template.setHashValueSerializer(GenericJacksonJsonRedisSerializer.builder().build());
+
+        StringRedisSerializer keySerializer = new StringRedisSerializer();
+        GenericJacksonJsonRedisSerializer valueSerializer =
+                GenericJacksonJsonRedisSerializer.builder().build();
+
+        template.setKeySerializer(keySerializer);
+        template.setValueSerializer(valueSerializer);
+
+        template.setHashKeySerializer(keySerializer);
+        template.setHashValueSerializer(valueSerializer);
+
+        template.afterPropertiesSet();
+
         return template;
     }
 
     @Bean
     @ConditionalOnMissingBean(SessionService.class)
-    public SessionService sessionService(RedisTemplate<String, UserInfo> redisTemplate) {
+    public SessionService sessionService(
+            RedisTemplate<String, Object> redisTemplate) {
+
         return new RedisSessionService(redisTemplate);
     }
 }

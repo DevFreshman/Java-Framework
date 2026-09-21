@@ -1,43 +1,49 @@
 package org.example.javaframework.infra.redis;
 
+import lombok.extern.slf4j.Slf4j;
 import org.example.javaframework.infra.SessionService;
-import org.example.javaframework.infra.model.UserInfo;
 import org.springframework.data.redis.core.RedisTemplate;
 
 import java.time.Duration;
 import java.util.Optional;
 
+@Slf4j
 public class RedisSessionService implements SessionService {
 
-    private static final String KEY_PREFIX = "session:";
 
-    private final RedisTemplate<String, UserInfo> redisTemplate;
+    private final RedisTemplate<String, Object> redisTemplate;
 
-    public RedisSessionService(RedisTemplate<String, UserInfo> redisTemplate) {
+    public RedisSessionService(RedisTemplate<String, Object> redisTemplate) {
         this.redisTemplate = redisTemplate;
     }
 
     @Override
-    public void save(String accessToken, UserInfo userInfo, Duration ttl) {
-        redisTemplate.opsForValue().set(KEY_PREFIX + accessToken, userInfo, ttl);
+    public <T> void save(String key, T data, Duration ttl) {
+        redisTemplate.opsForValue().set(key, data, ttl);
     }
 
     @Override
-    public Optional<UserInfo> findByAccessToken(String accessToken) {
+    public <T> Optional<T> find(String key, Class<T> type) {
         try {
-            UserInfo session = redisTemplate.opsForValue().get(KEY_PREFIX + accessToken);
-            return Optional.ofNullable(session);
+            Object value = redisTemplate.opsForValue().get(key);
+            if (type.isInstance(value)) {
+                return Optional.of(type.cast(value));
+            }
         } catch (Exception e) {
+            log.error("Error retrieving value from Redis for key {}", key);
+            log.debug(e.getMessage());
             return Optional.empty();
         }
+        return Optional.empty();
     }
 
     @Override
-    public void deleteByAccessToken(String accessToken) {
+    public void delete(String key) {
         try {
-            redisTemplate.delete(KEY_PREFIX + accessToken);
+            redisTemplate.delete(key);
         } catch (Exception e) {
-            // Log the exception
+            log.error("Error deleting value from Redis for key {}", key);
+            log.debug(e.getMessage());
         }
     }
 }

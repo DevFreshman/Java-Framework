@@ -10,7 +10,7 @@ public record UserSession(
         String userId,
         String username,
         String role,
-        String domain
+        String status
 ) {
     public List<GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority("ROLE_" + role));
