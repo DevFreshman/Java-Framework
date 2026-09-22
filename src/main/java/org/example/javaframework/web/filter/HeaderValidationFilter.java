@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.List;
 
 @Component
 @Order(Ordered.HIGHEST_PRECEDENCE)
@@ -19,8 +20,19 @@ public class HeaderValidationFilter extends OncePerRequestFilter {
 
     private final ErrorResponseWriter errorResponseWriter;
 
+    private static final List<String> EXCLUDED_PREFIXES = List.of(
+            "/actuator",
+            "/swagger-ui",
+            "/v3/api-docs"
+    );
+
     public HeaderValidationFilter(ErrorResponseWriter errorResponseWriter) {
         this.errorResponseWriter = errorResponseWriter;
+    }
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        String path = request.getRequestURI();
+        return EXCLUDED_PREFIXES.stream().anyMatch(path::startsWith);
     }
 
     @Override
