@@ -66,8 +66,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             // Check account status
             if (!"ACTIVE".equals(session.status())) {
                 log.debug(
-                        "Inactive user attempted to access resource: userId={}",
-                        session.userId()
+                        "Inactive user attempted to access resource: userId={}, status={}",
+                        session.userId(),
+                        session.status()
                 );
 
                 errorResponseWriter.write(
