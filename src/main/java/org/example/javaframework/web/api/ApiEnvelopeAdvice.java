@@ -27,6 +27,12 @@ public class ApiEnvelopeAdvice implements ResponseBodyAdvice<Object> {
             return body;
         }
 
+        // Chỉ bọc nếu content type thực sự là JSON — actuator prometheus (text/plain),
+        // actuator root (application/vnd.spring-boot.actuator.v3+json) sẽ tự động bypass
+        if (!MediaType.APPLICATION_JSON.isCompatibleWith(selectedContentType)) {
+            return body;
+        }
+
         String actualStatusCode = resolveActualStatus(response);
 
         if (body instanceof Page<?> page) {

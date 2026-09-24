@@ -7,12 +7,3 @@ framework:
       jwt:
         secret:  ${JWT_SECRET:day-la-chuoi-test-tam-thoi-du-32-ky-tu}
         ttl-seconds: ${JWT_TTL_SECONDS:3600}
-management:
-  endpoints:
-    web:
-      exposure:
-        include: health,info
-  endpoint:
-    health:
-      probes:
-        enabled: true
