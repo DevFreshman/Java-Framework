@@ -17,11 +17,8 @@ import java.util.UUID;
 @Order(Ordered.HIGHEST_PRECEDENCE + 1)
 public class MdcFilter extends OncePerRequestFilter {
 
-    private static final String HEADER_TRACE_ID = "X-Trace-Id";
 
     private static final String MDC_MESSAGE_ID = "clientMessageId";
-    private static final String MDC_REQUEST_ID = "requestId";
-    private static final String MDC_TRACE_ID = "traceId";
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
@@ -29,18 +26,7 @@ public class MdcFilter extends OncePerRequestFilter {
         try {
             String messageId = request.getHeader("clientMessageId");
 
-            String requestId = UUID.randomUUID().toString();
-
-            String traceId = request.getHeader(HEADER_TRACE_ID);
-            if (traceId == null || traceId.isBlank()) {
-                traceId = UUID.randomUUID().toString();
-            }
-
             MDC.put(MDC_MESSAGE_ID, messageId);
-            MDC.put(MDC_REQUEST_ID, requestId);
-            MDC.put(MDC_TRACE_ID, traceId);
-
-            response.setHeader(HEADER_TRACE_ID, traceId);
 
             chain.doFilter(request, response);
         } finally {
